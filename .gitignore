@@ -1,0 +1,13 @@
+# Ignore dependencies
+**/node_modules/
+**/vendor/
+
+# Ignore local environment files (IMPORTANT for security)
+**/.env
+**/.env.local
+
+# Ignore DDEV and build files
+**/.ddev/
+**/.next/
+**/dist/
+.DS_Store
