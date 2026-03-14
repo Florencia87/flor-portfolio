@@ -5,7 +5,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'my-portfolio-backend.ddev.site', // Your exact DDEV URL
+        hostname: 'my-portfolio-backend.ddev.site', // Tu URL de DDEV
         port: '',
         pathname: '/sites/default/files/**',
       },
@@ -13,4 +13,9 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// Aquí es donde "envolvemos" nuestra configuración con el analizador
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+module.exports = withBundleAnalyzer(nextConfig)
