@@ -14,6 +14,9 @@ async function getNode(slug: string[]) {
 
   const draftData = await getDraftData()
 
+  if (path.includes('.json') || path.includes('.well-known')) {
+    return null;
+  }
   if (draftData.path === path) {
     params.resourceVersion = draftData.resourceVersion
   }
@@ -29,8 +32,8 @@ async function getNode(slug: string[]) {
   const uuid = translatedPath.entity.uuid
   const tag = `${translatedPath.entity.type}:${translatedPath.entity.id}`
 
-  if (type === "node--article") {
-    params.include = "field_image,uid"
+  if (type === "node--proyecto") {
+    params.include = "field_project_image,field_project_image.uri,uid"
   }
 
   const resource = await drupal.getResource<DrupalNode>(type, uuid, {
@@ -80,36 +83,28 @@ export async function generateMetadata(
   }
 
   return {
-    title: node.title,
+    title: node?.title || "Cargando...",
   }
 }
 
-const RESOURCE_TYPES = ["node--page", "node--article"]
+const RESOURCE_TYPES = ["node--page", "node--proyecto"]
 
 export async function generateStaticParams(): Promise<NodePageParams[]> {
-  const resources = await drupal.getResourceCollectionPathSegments(
-    RESOURCE_TYPES,
-    {
-      // The pathPrefix will be removed from the returned path segments array.
-      // pathPrefix: "/blog",
-      // The list of locales to return.
-      // locales: ["en", "es"],
-      // The default locale.
-      // defaultLocale: "en",
-    }
-  )
-
-  return resources.map((resource) => {
-    // resources is an array containing objects like: {
-    //   path: "/blog/some-category/a-blog-post",
-    //   type: "node--article",
-    //   locale: "en", // or `undefined` if no `locales` requested.
-    //   segments: ["blog", "some-category", "a-blog-post"],
-    // }
-    return {
-      slug: resource.segments,
-    }
-  })
+  try {
+    const resources = await drupal.getResourceCollectionPathSegments(
+      RESOURCE_TYPES
+    )
+    return resources.map((resource) => {
+      return {
+        slug: resource.segments,
+      }
+    })
+  } catch (error) {
+    // Si falla (por ejemplo, por la ruta de Chrome), 
+    // devolvemos un array vacío para que no explote el servidor.
+    console.warn("Ruta ignorada o no encontrada en Drupal");
+    return []
+  }
 }
 
 export default async function NodePage(props: NodePageProps) {
@@ -133,10 +128,16 @@ export default async function NodePage(props: NodePageProps) {
     notFound()
   }
 
+  if (!node) {
+    notFound();
+  }
+
   return (
     <>
       {node.type === "node--page" && <BasicPage node={node} />}
       {node.type === "node--article" && <Article node={node} />}
+      {/* Agregamos esta línea para tu portfolio */}
+      {node.type === "node--proyecto" && <Article node={node} />}
     </>
   )
 }

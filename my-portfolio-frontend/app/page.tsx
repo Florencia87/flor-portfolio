@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const nodes = await drupal.getResourceCollection<DrupalNode[]>(
-    "node--article",
+    "node--proyecto",
     {
       params: {
         "filter[status]": 1,
-        "fields[node--article]": "title,path,field_image,uid,created",
-        include: "field_image,uid",
+        // Quitamos el .uri porque Drupal dice que no es una relación
+        include: "field_project_image,uid", 
         sort: "-created",
       },
       next: {
@@ -25,7 +25,7 @@ export default async function Home() {
 
   return (
     <>
-      <h1 className="mb-10 text-6xl font-black">Latest Articles.</h1>
+      <h1 className="mb-10 text-6xl font-black">Mis Proyectos.</h1>
       {nodes?.length ? (
         nodes.map((node) => (
           <div key={node.id}>

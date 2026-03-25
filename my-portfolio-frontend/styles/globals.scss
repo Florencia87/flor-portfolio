@@ -1,0 +1,12 @@
+// styles/globals.scss
+
+// Definimos unas variables básicas para probar
+$bg-color: #f4f4f4;
+$text-color: #333;
+
+body {
+  background-color: $bg-color;
+  color: $text-color;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
